@@ -1,0 +1,212 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1020">
+  <title>Lucid Host | Dashboard</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: #0b1020;
+      color: #eef2ff;
+    }
+
+    .layout { display: flex; min-height: 100vh; }
+
+    aside {
+      width: 220px;
+      padding: 25px 16px;
+      background: #11182b;
+      border-right: 1px solid #26304a;
+    }
+
+    .brand { font-size: 22px; font-weight: 800; }
+    .brand span { color: #818cf8; }
+
+    nav { margin-top: 35px; }
+
+    nav a {
+      display: block;
+      padding: 12px;
+      margin: 8px 0;
+      color: #aeb9d4;
+      text-decoration: none;
+      border-radius: 9px;
+    }
+
+    nav a.active, nav a:hover {
+      background: #283052;
+      color: white;
+    }
+
+    main { flex: 1; min-width: 0; padding: 28px; }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    h1 { margin: 0; font-size: 27px; }
+    .muted { color: #9ca9c7; }
+
+    .status {
+      padding: 8px 12px;
+      border-radius: 20px;
+      background: #123a30;
+      color: #6ee7b7;
+      font-size: 13px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin: 28px 0;
+    }
+
+    .card {
+      padding: 20px;
+      border: 1px solid #26304a;
+      border-radius: 14px;
+      background: #11182b;
+    }
+
+    .number { font-size: 28px; font-weight: 750; margin-top: 10px; }
+
+    .section-title { margin: 30px 0 15px; }
+
+    .projects {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .project-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .badge {
+      color: #fcd34d;
+      font-size: 12px;
+    }
+
+    button {
+      margin-top: 18px;
+      padding: 10px 14px;
+      background: #6366f1;
+      color: white;
+      border: 0;
+      border-radius: 8px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+
+    button:hover { background: #818cf8; }
+
+    footer {
+      margin-top: 35px;
+      color: #7f8ba8;
+      font-size: 12px;
+    }
+
+    @media (max-width: 650px) {
+      aside { width: 76px; padding: 20px 8px; }
+      .brand { font-size: 15px; text-align: center; }
+      nav a { text-align: center; padding: 12px 4px; font-size: 12px; }
+      main { padding: 18px 12px; }
+      h1 { font-size: 22px; }
+      .stats { grid-template-columns: 1fr; gap: 10px; }
+      .projects { grid-template-columns: 1fr; }
+      .card { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside>
+      <div class="brand">Lucid <span>Host</span></div>
+      <nav>
+        <a class="active" href="#dashboard">⌂ Dashboard</a>
+        <a href="#projects">▣ Projects</a>
+        <a href="#servers">▤ Servers</a>
+        <a href="#settings">⚙ Settings</a>
+      </nav>
+    </aside>
+
+    <main id="dashboard">
+      <div class="top">
+        <div>
+          <h1>Dashboard</h1>
+          <p class="muted">Welcome to your hosting control panel.</p>
+        </div>
+        <div class="status">● Panel ready</div>
+      </div>
+
+      <div class="stats">
+        <div class="card">
+          <div class="muted">Total projects</div>
+          <div class="number">0</div>
+        </div>
+        <div class="card">
+          <div class="muted">Running bots</div>
+          <div class="number">0</div>
+        </div>
+        <div class="card">
+          <div class="muted">Server status</div>
+          <div class="number" style="font-size:21px">Not connected</div>
+        </div>
+      </div>
+
+      <h2 class="section-title" id="projects">Your projects</h2>
+
+      <div class="projects">
+        <div class="card">
+          <div class="project-head">
+            <strong>WhatsApp Bots</strong>
+            <span class="badge">Not deployed</span>
+          </div>
+          <p class="muted">Manage WhatsApp bot deployments.</p>
+          <button onclick="alert('Bot deployment will be added in a later step.')">
+            Add bot
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="project-head">
+            <strong>Telegram Bots</strong>
+            <span class="badge">Not deployed</span>
+          </div>
+          <p class="muted">Manage Telegram bot deployments.</p>
+          <button onclick="alert('Bot deployment will be added in a later step.')">
+            Add bot
+          </button>
+        </div>
+      </div>
+
+      <h2 class="section-title" id="servers">Server overview</h2>
+      <div class="card">
+        <strong>Hosting engine</strong>
+        <p class="muted">
+          No hosting server is connected yet. This dashboard is the
+          first step toward your own hosting platform.
+        </p>
+      </div>
+
+      <footer id="settings">
+        Lucid Host · Initial development version
+      </footer>
+    </main>
+  </div>
+</body>
+          </html>
+          
