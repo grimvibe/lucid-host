@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b1020">
   <title>Lucid Host | Dashboard</title>
   <style>
@@ -19,194 +19,371 @@
     .layout { display: flex; min-height: 100vh; }
 
     aside {
-      width: 220px;
-      padding: 25px 16px;
+      width: 210px;
+      flex-shrink: 0;
+      padding: 24px 14px;
       background: #11182b;
       border-right: 1px solid #26304a;
     }
 
-    .brand { font-size: 22px; font-weight: 800; }
+    .brand { font-size: 21px; font-weight: 800; }
     .brand span { color: #818cf8; }
 
-    nav { margin-top: 35px; }
+    nav { margin-top: 30px; }
 
     nav a {
       display: block;
       padding: 12px;
-      margin: 8px 0;
+      margin: 7px 0;
       color: #aeb9d4;
       text-decoration: none;
       border-radius: 9px;
     }
 
-    nav a.active, nav a:hover {
+    nav a:hover, nav a.active {
       background: #283052;
       color: white;
     }
 
-    main { flex: 1; min-width: 0; padding: 28px; }
+    main { flex: 1; min-width: 0; padding: 26px; }
 
     .top {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       gap: 12px;
       flex-wrap: wrap;
     }
 
     h1 { margin: 0; font-size: 27px; }
+    h2 { margin-top: 28px; }
     .muted { color: #9ca9c7; }
 
-    .status {
-      padding: 8px 12px;
+    .status, .tag {
+      display: inline-block;
+      padding: 5px 9px;
       border-radius: 20px;
+      font-size: 12px;
       background: #123a30;
       color: #6ee7b7;
-      font-size: 13px;
     }
 
-    .stats {
+    .stats, .projects {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-      margin: 28px 0;
+      gap: 14px;
+      margin-top: 22px;
     }
 
-    .card {
-      padding: 20px;
-      border: 1px solid #26304a;
-      border-radius: 14px;
+    .projects { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .card, .form-card {
       background: #11182b;
+      border: 1px solid #26304a;
+      border-radius: 13px;
+      padding: 18px;
+      overflow-wrap: anywhere;
     }
 
-    .number { font-size: 28px; font-weight: 750; margin-top: 10px; }
-
-    .section-title { margin: 30px 0 15px; }
-
-    .projects {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
-    }
-
-    .project-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .badge {
-      color: #fcd34d;
-      font-size: 12px;
-    }
+    .number { font-size: 26px; font-weight: 750; margin-top: 8px; }
 
     button {
-      margin-top: 18px;
-      padding: 10px 14px;
-      background: #6366f1;
-      color: white;
       border: 0;
       border-radius: 8px;
+      padding: 11px 15px;
+      background: #6366f1;
+      color: white;
       font-weight: 650;
       cursor: pointer;
     }
 
     button:hover { background: #818cf8; }
+    button:disabled { opacity: .6; cursor: wait; }
 
-    footer {
-      margin-top: 35px;
-      color: #7f8ba8;
-      font-size: 12px;
+    .secondary { background: #283052; }
+    .danger { background: #7f1d1d; }
+
+    .form-card { margin-top: 22px; }
+    .form-card[hidden] { display: none; }
+
+    form { display: grid; gap: 15px; }
+
+    label { display: grid; gap: 7px; font-size: 14px; }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #35415f;
+      border-radius: 8px;
+      background: #0b1020;
+      color: #eef2ff;
+      font: inherit;
     }
 
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .message { margin-top: 14px; font-size: 14px; }
+    .error { color: #fca5a5; }
+    .success { color: #6ee7b7; }
+
+    .empty {
+      padding: 24px;
+      border: 1px dashed #35415f;
+      border-radius: 12px;
+      color: #9ca9c7;
+      text-align: center;
+    }
+
+    .project-meta { line-height: 1.8; font-size: 13px; }
+    footer { margin-top: 30px; color: #7f8ba8; font-size: 12px; }
+
     @media (max-width: 650px) {
-      aside { width: 76px; padding: 20px 8px; }
-      .brand { font-size: 15px; text-align: center; }
-      nav a { text-align: center; padding: 12px 4px; font-size: 12px; }
-      main { padding: 18px 12px; }
-      h1 { font-size: 22px; }
-      .stats { grid-template-columns: 1fr; gap: 10px; }
+      aside { width: 76px; padding: 18px 7px; }
+      .brand { font-size: 13px; text-align: center; }
+      nav a { padding: 11px 3px; text-align: center; font-size: 11px; }
+      main { padding: 16px 11px; }
+      h1 { font-size: 23px; }
+      .stats { grid-template-columns: 1fr; }
       .projects { grid-template-columns: 1fr; }
-      .card { padding: 16px; }
+      .card, .form-card { padding: 14px; }
     }
   </style>
 </head>
 <body>
-  <div class="layout">
-    <aside>
-      <div class="brand">Lucid <span>Host</span></div>
-      <nav>
-        <a class="active" href="#dashboard">⌂ Dashboard</a>
-        <a href="#projects">▣ Projects</a>
-        <a href="#servers">▤ Servers</a>
-        <a href="#settings">⚙ Settings</a>
-      </nav>
-    </aside>
+<div class="layout">
+  <aside>
+    <div class="brand">Lucid <span>Host</span></div>
+    <nav>
+      <a class="active" href="#dashboard">⌂ Dashboard</a>
+      <a href="#projects">▣ Projects</a>
+      <a href="#servers">▤ Servers</a>
+      <a href="#settings">⚙ Settings</a>
+    </nav>
+  </aside>
 
-    <main id="dashboard">
+  <main id="dashboard">
+    <div class="top">
+      <div>
+        <h1>Dashboard</h1>
+        <p class="muted">Your bot-hosting control panel.</p>
+      </div>
+      <span class="status" id="apiStatus">Checking API...</span>
+    </div>
+
+    <section class="stats">
+      <div class="card">
+        <div class="muted">Total projects</div>
+        <div class="number" id="totalProjects">—</div>
+      </div>
+      <div class="card">
+        <div class="muted">Registered</div>
+        <div class="number" id="registeredProjects">—</div>
+      </div>
+      <div class="card">
+        <div class="muted">Supported runtimes</div>
+        <div class="number">2</div>
+        <div class="muted">Node.js and Python</div>
+      </div>
+    </section>
+
+    <section id="projects">
       <div class="top">
-        <div>
-          <h1>Dashboard</h1>
-          <p class="muted">Welcome to your hosting control panel.</p>
-        </div>
-        <div class="status">● Panel ready</div>
+        <h2>Your projects</h2>
+        <button id="addButton" type="button">+ Add project</button>
       </div>
 
-      <div class="stats">
-        <div class="card">
-          <div class="muted">Total projects</div>
-          <div class="number">0</div>
-        </div>
-        <div class="card">
-          <div class="muted">Running bots</div>
-          <div class="number">0</div>
-        </div>
-        <div class="card">
-          <div class="muted">Server status</div>
-          <div class="number" style="font-size:21px">Not connected</div>
-        </div>
-      </div>
+      <div class="form-card" id="projectFormCard" hidden>
+        <h3>Register a project</h3>
+        <p class="muted">This registers project details; it does not run the bot yet.</p>
 
-      <h2 class="section-title" id="projects">Your projects</h2>
+        <form id="projectForm">
+          <label>
+            Project name
+            <input
+              id="projectName"
+              name="name"
+              type="text"
+              maxlength="60"
+              placeholder="e.g. My WhatsApp Bot"
+              required
+            >
+          </label>
 
-      <div class="projects">
-        <div class="card">
-          <div class="project-head">
-            <strong>WhatsApp Bots</strong>
-            <span class="badge">Not deployed</span>
+          <label>
+            Runtime
+            <select id="runtime" name="runtime" required>
+              <option value="nodejs">Node.js</option>
+              <option value="python">Python</option>
+            </select>
+          </label>
+
+          <label>
+            Messaging platform
+            <select id="platform" name="platform" required>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="telegram">Telegram</option>
+              <option value="discord">Discord</option>
+              <option value="other">Other / General app</option>
+            </select>
+          </label>
+
+          <div class="actions">
+            <button id="submitButton" type="submit">Register project</button>
+            <button class="secondary" id="cancelButton" type="button">Cancel</button>
           </div>
-          <p class="muted">Manage WhatsApp bot deployments.</p>
-          <button onclick="alert('Bot deployment will be added in a later step.')">
-            Add bot
-          </button>
-        </div>
-
-        <div class="card">
-          <div class="project-head">
-            <strong>Telegram Bots</strong>
-            <span class="badge">Not deployed</span>
-          </div>
-          <p class="muted">Manage Telegram bot deployments.</p>
-          <button onclick="alert('Bot deployment will be added in a later step.')">
-            Add bot
-          </button>
-        </div>
+        </form>
+        <div class="message" id="formMessage" role="status"></div>
       </div>
 
-      <h2 class="section-title" id="servers">Server overview</h2>
+      <div class="projects" id="projectList"></div>
+      <div class="message" id="listMessage" role="status"></div>
+    </section>
+
+    <section id="servers">
+      <h2>Server overview</h2>
       <div class="card">
         <strong>Hosting engine</strong>
         <p class="muted">
-          No hosting server is connected yet. This dashboard is the
-          first step toward your own hosting platform.
+          No bot execution engine is connected yet. Registered projects
+          are metadata only until secure execution is implemented.
         </p>
       </div>
+    </section>
 
-      <footer id="settings">
-        Lucid Host · Initial development version
-      </footer>
-    </main>
-  </div>
+    <footer id="settings">Lucid Host · Development version</footer>
+  </main>
+</div>
+
+<script>
+  const formCard = document.getElementById("projectFormCard");
+  const form = document.getElementById("projectForm");
+  const formMessage = document.getElementById("formMessage");
+  const listMessage = document.getElementById("listMessage");
+  const submitButton = document.getElementById("submitButton");
+
+  document.getElementById("addButton").addEventListener("click", () => {
+    formCard.hidden = false;
+    formMessage.textContent = "";
+    document.getElementById("projectName").focus();
+  });
+
+  document.getElementById("cancelButton").addEventListener("click", () => {
+    formCard.hidden = true;
+    form.reset();
+    formMessage.textContent = "";
+  });
+
+  function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[char]);
+  }
+
+  async function loadProjects() {
+    try {
+      const response = await fetch("/api/projects");
+      if (!response.ok) throw new Error("Could not load projects");
+
+      const data = await response.json();
+
+      document.getElementById("totalProjects").textContent = data.total;
+      document.getElementById("registeredProjects").textContent =
+        data.projects.filter(p => p.status === "registered").length;
+
+      const list = document.getElementById("projectList");
+      list.replaceChildren();
+
+      if (data.projects.length === 0) {
+        list.innerHTML = '<div class="empty">No projects yet. Tap Add project to register your first one.</div>';
+        return;
+      }
+
+      for (const project of data.projects) {
+        const card = document.createElement("article");
+        card.className = "card";
+
+        card.innerHTML = `
+          <div class="top">
+            <strong>${escapeHTML(project.name)}</strong>
+            <span class="tag">${escapeHTML(project.status)}</span>
+          </div>
+          <p class="project-meta muted">
+            Runtime: ${escapeHTML(project.runtime)}<br>
+            Platform: ${escapeHTML(project.platform)}<br>
+            Project ID: ${escapeHTML(project.id)}
+          </p>
+        `;
+
+        list.appendChild(card);
+      }
+    } catch (error) {
+      listMessage.className = "message error";
+      listMessage.textContent =
+        "Unable to load projects. Check that the API server is running.";
+    }
+  }
+
+  async function checkAPI() {
+    const status = document.getElementById("apiStatus");
+
+    try {
+      const response = await fetch("/health");
+      if (!response.ok) throw new Error("API unavailable");
+
+      status.textContent = "● API connected";
+    } catch {
+      status.textContent = "● API unavailable";
+    }
+  }
+
+  form.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    formMessage.className = "message";
+    formMessage.textContent = "";
+    submitButton.disabled = true;
+    submitButton.textContent = "Registering...";
+
+    const project = {
+      name: document.getElementById("projectName").value.trim(),
+      runtime: document.getElementById("runtime").value,
+      platform: document.getElementById("platform").value
+    };
+
+    try {
+      const response = await fetch("/api/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(project)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Registration failed");
+      }
+
+      formMessage.className = "message success";
+      formMessage.textContent = "Project registered successfully!";
+      form.reset();
+
+      await loadProjects();
+      formCard.hidden = true;
+    } catch (error) {
+      formMessage.className = "message error";
+      formMessage.textContent = error.message;
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = "Register project";
+    }
+  });
+
+  checkAPI();
+  loadProjects();
+</script>
 </body>
-          </html>
-          
+</html>
