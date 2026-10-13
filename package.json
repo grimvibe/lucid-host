@@ -1,0 +1,15 @@
+
+{
+  "name": "lucid-host",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A platform to host and manage bots and Node.js applications.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
