@@ -9,10 +9,6 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json({ limit: "20kb" }));
 app.use(express.static(path.join(__dirname, "../public")));
 
-// Temporary storage until we add a database.
-const projects = [];
-let nextId = 1;
-
 const allowedRuntimes = ["nodejs", "python"];
 const allowedPlatforms = [
   "whatsapp",
@@ -24,7 +20,7 @@ const allowedPlatforms = [
 app.get("/api", (req, res) => {
   res.json({
     name: "Lucid Host",
-    version: "1.1.0",
+    version: "1.3.0",
     status: "online",
     supportedRuntimes: allowedRuntimes,
     supportedPlatforms: allowedPlatforms
@@ -38,15 +34,21 @@ app.get("/health", (req, res) => {
   });
 });
 
-// List all registered projects.
+// List all projects from SQLite.
 app.get("/api/projects", (req, res) => {
+  const projects = db.prepare(`
+    SELECT id, name, runtime, platform, status, createdAt
+    FROM projects
+    ORDER BY id DESC
+  `).all();
+
   res.json({
     total: projects.length,
     projects
   });
 });
 
-// Register a project.
+// Register a project in SQLite.
 app.post("/api/projects", (req, res) => {
   const { name, runtime, platform } = req.body;
 
@@ -70,20 +72,22 @@ app.post("/api/projects", (req, res) => {
 
   if (!allowedPlatforms.includes(platform)) {
     return res.status(400).json({
-      error: "Platform must be whatsapp, telegram, discord, or other"
+      error: "Invalid messaging platform"
     });
   }
 
-  const project = {
-    id: nextId++,
-    name: name.trim(),
-    runtime,
-    platform,
-    status: "registered",
-    createdAt: new Date().toISOString()
-  };
+  const createdAt = new Date().toISOString();
 
-  projects.push(project);
+  const result = db.prepare(`
+    INSERT INTO projects (name, runtime, platform, status, createdAt)
+    VALUES (?, ?, ?, 'registered', ?)
+  `).run(name.trim(), runtime, platform, createdAt);
+
+  const project = db.prepare(`
+    SELECT id, name, runtime, platform, status, createdAt
+    FROM projects
+    WHERE id = ?
+  `).get(result.lastInsertRowid);
 
   res.status(201).json({
     message: "Project registered successfully",
@@ -91,8 +95,7 @@ app.post("/api/projects", (req, res) => {
   });
 });
 
-// Get a project by ID.
-
+// Get one project by ID.
 app.get("/api/projects/:id", (req, res) => {
   const id = Number(req.params.id);
 
@@ -117,6 +120,7 @@ app.get("/api/projects/:id", (req, res) => {
   res.json(project);
 });
 
+// Edit a project.
 app.put("/api/projects/:id", (req, res) => {
   const id = Number(req.params.id);
   const { name, runtime, platform } = req.body;
@@ -151,21 +155,17 @@ app.put("/api/projects/:id", (req, res) => {
     });
   }
 
-  const existing = db.prepare(
-    "SELECT id FROM projects WHERE id = ?"
-  ).get(id);
-
-  if (!existing) {
-    return res.status(404).json({
-      error: "Project not found"
-    });
-  }
-
-  db.prepare(`
+  const result = db.prepare(`
     UPDATE projects
     SET name = ?, runtime = ?, platform = ?
     WHERE id = ?
   `).run(name.trim(), runtime, platform, id);
+
+  if (result.changes === 0) {
+    return res.status(404).json({
+      error: "Project not found"
+    });
+  }
 
   const project = db.prepare(`
     SELECT id, name, runtime, platform, status, createdAt
@@ -179,6 +179,7 @@ app.put("/api/projects/:id", (req, res) => {
   });
 });
 
+// Delete a project.
 app.delete("/api/projects/:id", (req, res) => {
   const id = Number(req.params.id);
 
@@ -188,9 +189,9 @@ app.delete("/api/projects/:id", (req, res) => {
     });
   }
 
-  const result = db.prepare(
-    "DELETE FROM projects WHERE id = ?"
-  ).run(id);
+  const result = db.prepare(`
+    DELETE FROM projects WHERE id = ?
+  `).run(id);
 
   if (result.changes === 0) {
     return res.status(404).json({
@@ -203,7 +204,6 @@ app.delete("/api/projects/:id", (req, res) => {
     id
   });
 });
-
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Lucid Host is running on port ${PORT}`);
