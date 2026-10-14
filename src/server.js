@@ -91,7 +91,70 @@ app.post("/api/projects", (req, res) => {
 });
 
 // Get a project by ID.
-app.get("/api/projects/:id", (req, res) => {
+
+app.put("/api/projects/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const { name, runtime, platform } = req.body;
+
+  if (!Number.isSafeInteger(id) || id < 1) {
+    return res.status(400).json({
+      error: "Invalid project ID"
+    });
+  }
+
+  if (typeof name !== "string" || !name.trim()) {
+    return res.status(400).json({
+      error: "Project name is required"
+    });
+  }
+
+  if (name.trim().length > 60) {
+    return res.status(400).json({
+      error: "Project name must be 60 characters or fewer"
+    });
+  }
+
+  if (!allowedRuntimes.includes(runtime)) {
+    return res.status(400).json({
+      error: "Invalid runtime"
+    });
+  }
+
+  if (!allowedPlatforms.includes(platform)) {
+    return res.status(400).json({
+      error: "Invalid platform"
+    });
+  }
+
+  const existing = db.prepare(
+    "SELECT id FROM projects WHERE id = ?"
+  ).get(id);
+
+  if (!existing) {
+    return res.status(404).json({
+      error: "Project not found"
+    });
+  }
+
+  db.prepare(`
+    UPDATE projects
+    SET name = ?, runtime = ?, platform = ?
+    WHERE id = ?
+  `).run(name.trim(), runtime, platform, id);
+
+  const project = db.prepare(`
+    SELECT id, name, runtime, platform, status, createdAt
+    FROM projects
+    WHERE id = ?
+  `).get(id);
+
+  res.json({
+    message: "Project updated successfully",
+    project
+  });
+});
+
+app.delete("/api/projects/:id", (req, res) => {
   const id = Number(req.params.id);
 
   if (!Number.isSafeInteger(id) || id < 1) {
@@ -100,16 +163,22 @@ app.get("/api/projects/:id", (req, res) => {
     });
   }
 
-  const project = projects.find(item => item.id === id);
+  const result = db.prepare(
+    "DELETE FROM projects WHERE id = ?"
+  ).run(id);
 
-  if (!project) {
+  if (result.changes === 0) {
     return res.status(404).json({
       error: "Project not found"
     });
   }
 
-  res.json(project);
+  res.json({
+    message: "Project deleted successfully",
+    id
+  });
 });
+
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Lucid Host is running on port ${PORT}`);
