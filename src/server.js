@@ -93,6 +93,30 @@ app.post("/api/projects", (req, res) => {
 
 // Get a project by ID.
 
+app.get("/api/projects/:id", (req, res) => {
+  const id = Number(req.params.id);
+
+  if (!Number.isSafeInteger(id) || id < 1) {
+    return res.status(400).json({
+      error: "Invalid project ID"
+    });
+  }
+
+  const project = db.prepare(`
+    SELECT id, name, runtime, platform, status, createdAt
+    FROM projects
+    WHERE id = ?
+  `).get(id);
+
+  if (!project) {
+    return res.status(404).json({
+      error: "Project not found"
+    });
+  }
+
+  res.json(project);
+});
+
 app.put("/api/projects/:id", (req, res) => {
   const id = Number(req.params.id);
   const { name, runtime, platform } = req.body;
