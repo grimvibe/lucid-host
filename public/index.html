@@ -28,7 +28,6 @@
 
     .brand { font-size: 21px; font-weight: 800; }
     .brand span { color: #818cf8; }
-
     nav { margin-top: 30px; }
 
     nav a {
@@ -99,13 +98,12 @@
 
     button:hover { background: #818cf8; }
     button:disabled { opacity: .6; cursor: wait; }
-
     .secondary { background: #283052; }
     .danger { background: #7f1d1d; }
+    .danger:hover { background: #b91c1c; }
 
     .form-card { margin-top: 22px; }
     .form-card[hidden] { display: none; }
-
     form { display: grid; gap: 15px; }
 
     label { display: grid; gap: 7px; font-size: 14px; }
@@ -121,7 +119,6 @@
     }
 
     .actions { display: flex; gap: 10px; flex-wrap: wrap; }
-
     .message { margin-top: 14px; font-size: 14px; }
     .error { color: #fca5a5; }
     .success { color: #6ee7b7; }
@@ -132,9 +129,12 @@
       border-radius: 12px;
       color: #9ca9c7;
       text-align: center;
+      grid-column: 1 / -1;
     }
 
     .project-meta { line-height: 1.8; font-size: 13px; }
+    .project-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .project-actions button { padding: 9px 12px; }
     footer { margin-top: 30px; color: #7f8ba8; font-size: 12px; }
 
     @media (max-width: 650px) {
@@ -143,8 +143,7 @@
       nav a { padding: 11px 3px; text-align: center; font-size: 11px; }
       main { padding: 16px 11px; }
       h1 { font-size: 23px; }
-      .stats { grid-template-columns: 1fr; }
-      .projects { grid-template-columns: 1fr; }
+      .stats, .projects { grid-template-columns: 1fr; }
       .card, .form-card { padding: 14px; }
     }
   </style>
@@ -189,24 +188,25 @@
     <section id="projects">
       <div class="top">
         <h2>Your projects</h2>
-        <button id="addButton" type="button">+ Add project</button>
+        <div class="actions">
+          <button class="secondary" id="refreshButton" type="button">
+            ↻ Refresh
+          </button>
+          <button id="addButton" type="button">+ Add project</button>
+        </div>
       </div>
 
       <div class="form-card" id="projectFormCard" hidden>
-        <h3>Register a project</h3>
-        <p class="muted">This registers project details; it does not run the bot yet.</p>
+        <h3 id="formTitle">Register a project</h3>
+        <p class="muted" id="formDescription">
+          Register project details. This does not run the bot yet.
+        </p>
 
         <form id="projectForm">
           <label>
             Project name
-            <input
-              id="projectName"
-              name="name"
-              type="text"
-              maxlength="60"
-              placeholder="e.g. My WhatsApp Bot"
-              required
-            >
+            <input id="projectName" name="name" type="text"
+              maxlength="60" placeholder="e.g. My WhatsApp Bot" required>
           </label>
 
           <label>
@@ -229,7 +229,9 @@
 
           <div class="actions">
             <button id="submitButton" type="submit">Register project</button>
-            <button class="secondary" id="cancelButton" type="button">Cancel</button>
+            <button class="secondary" id="cancelButton" type="button">
+              Cancel
+            </button>
           </div>
         </form>
         <div class="message" id="formMessage" role="status"></div>
@@ -244,8 +246,8 @@
       <div class="card">
         <strong>Hosting engine</strong>
         <p class="muted">
-          No bot execution engine is connected yet. Registered projects
-          are metadata only until secure execution is implemented.
+          The execution engine is not connected yet. Projects are metadata
+          only until secure bot execution is implemented.
         </p>
       </div>
     </section>
@@ -260,18 +262,21 @@
   const formMessage = document.getElementById("formMessage");
   const listMessage = document.getElementById("listMessage");
   const submitButton = document.getElementById("submitButton");
+  const projectList = document.getElementById("projectList");
 
-  document.getElementById("addButton").addEventListener("click", () => {
-    formCard.hidden = false;
-    formMessage.textContent = "";
-    document.getElementById("projectName").focus();
-  });
+  let editingProjectId = null;
 
-  document.getElementById("cancelButton").addEventListener("click", () => {
-    formCard.hidden = true;
-    form.reset();
-    formMessage.textContent = "";
-  });
+  const runtimeLabels = {
+    nodejs: "Node.js",
+    python: "Python"
+  };
+
+  const platformLabels = {
+    whatsapp: "WhatsApp",
+    telegram: "Telegram",
+    discord: "Discord",
+    other: "Other / General app"
+  };
 
   function escapeHTML(value) {
     return String(value).replace(/[&<>"']/g, char => ({
@@ -283,7 +288,56 @@
     })[char]);
   }
 
+  function showForm(project = null) {
+    editingProjectId = project ? project.id : null;
+
+    form.reset();
+    formMessage.textContent = "";
+    formMessage.className = "message";
+    formCard.hidden = false;
+
+    document.getElementById("formTitle").textContent =
+      project ? "Edit project" : "Register a project";
+
+    document.getElementById("formDescription").textContent =
+      project
+        ? "Update this project's details."
+        : "Register project details. This does not run the bot yet.";
+
+    submitButton.textContent =
+      project ? "Save changes" : "Register project";
+
+    if (project) {
+      document.getElementById("projectName").value = project.name;
+      document.getElementById("runtime").value = project.runtime;
+      document.getElementById("platform").value = project.platform;
+    }
+
+    document.getElementById("projectName").focus();
+  }
+
+  document.getElementById("addButton").addEventListener("click", () => {
+    showForm();
+  });
+
+  document.getElementById("cancelButton").addEventListener("click", () => {
+    formCard.hidden = true;
+    form.reset();
+    editingProjectId = null;
+    formMessage.textContent = "";
+  });
+
+  document.getElementById("refreshButton").addEventListener("click", () => {
+    loadProjects();
+    checkAPI();
+  });
+
   async function loadProjects() {
+    const refreshButton = document.getElementById("refreshButton");
+    refreshButton.disabled = true;
+    listMessage.className = "message";
+    listMessage.textContent = "";
+
     try {
       const response = await fetch("/api/projects");
       if (!response.ok) throw new Error("Could not load projects");
@@ -294,11 +348,11 @@
       document.getElementById("registeredProjects").textContent =
         data.projects.filter(p => p.status === "registered").length;
 
-      const list = document.getElementById("projectList");
-      list.replaceChildren();
+      projectList.replaceChildren();
 
       if (data.projects.length === 0) {
-        list.innerHTML = '<div class="empty">No projects yet. Tap Add project to register your first one.</div>';
+        projectList.innerHTML =
+          '<div class="empty">No projects yet. Tap Add project to register your first one.</div>';
         return;
       }
 
@@ -312,20 +366,96 @@
             <span class="tag">${escapeHTML(project.status)}</span>
           </div>
           <p class="project-meta muted">
-            Runtime: ${escapeHTML(project.runtime)}<br>
-            Platform: ${escapeHTML(project.platform)}<br>
-            Project ID: ${escapeHTML(project.id)}
+            Runtime: ${escapeHTML(runtimeLabels[project.runtime] || project.runtime)}<br>
+            Platform: ${escapeHTML(platformLabels[project.platform] || project.platform)}<br>
+            Project ID: ${escapeHTML(project.id)}<br>
+            Created: ${escapeHTML(new Date(project.createdAt).toLocaleString())}
           </p>
+          <div class="project-actions">
+            <button type="button" class="edit-button"
+              data-id="${escapeHTML(project.id)}">Edit</button>
+            <button type="button" class="danger delete-button"
+              data-id="${escapeHTML(project.id)}">Delete</button>
+          </div>
         `;
 
-        list.appendChild(card);
+        projectList.appendChild(card);
       }
     } catch (error) {
       listMessage.className = "message error";
       listMessage.textContent =
         "Unable to load projects. Check that the API server is running.";
+    } finally {
+      refreshButton.disabled = false;
     }
   }
+
+  projectList.addEventListener("click", async event => {
+    const editButton = event.target.closest(".edit-button");
+    const deleteButton = event.target.closest(".delete-button");
+
+    if (editButton) {
+      const id = editButton.dataset.id;
+
+      try {
+        const response = await fetch(
+          `/api/projects/${encodeURIComponent(id)}`
+        );
+
+        const project = await response.json();
+
+        if (!response.ok) {
+          throw new Error(project.error || "Could not open project");
+        }
+
+        showForm(project);
+      } catch (error) {
+        listMessage.className = "message error";
+        listMessage.textContent = error.message;
+      }
+    }
+
+    if (deleteButton) {
+      const id = deleteButton.dataset.id;
+
+      if (!confirm(
+        `Are you sure you want to delete project #${id}? This cannot be undone.`
+      )) {
+        return;
+      }
+
+      deleteButton.disabled = true;
+
+      try {
+        const response = await fetch(
+          `/api/projects/${encodeURIComponent(id)}`,
+          { method: "DELETE" }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || "Could not delete project");
+        }
+
+        listMessage.className = "message success";
+        listMessage.textContent = "Project deleted successfully.";
+
+        if (String(editingProjectId) === String(id)) {
+          formCard.hidden = true;
+          editingProjectId = null;
+          form.reset();
+        }
+
+        await loadProjects();
+      } catch (error) {
+        listMessage.className = "message error";
+        listMessage.textContent = error.message;
+      } finally {
+        deleteButton.disabled = false;
+      }
+    }
+  });
 
   async function checkAPI() {
     const status = document.getElementById("apiStatus");
@@ -346,7 +476,9 @@
     formMessage.className = "message";
     formMessage.textContent = "";
     submitButton.disabled = true;
-    submitButton.textContent = "Registering...";
+
+    const isEditing = editingProjectId !== null;
+    submitButton.textContent = isEditing ? "Saving..." : "Registering...";
 
     const project = {
       name: document.getElementById("projectName").value.trim(),
@@ -355,8 +487,12 @@
     };
 
     try {
-      const response = await fetch("/api/projects", {
-        method: "POST",
+      const url = isEditing
+        ? `/api/projects/${encodeURIComponent(editingProjectId)}`
+        : "/api/projects";
+
+      const response = await fetch(url, {
+        method: isEditing ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(project)
       });
@@ -364,18 +500,23 @@
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || "Registration failed");
+        throw new Error(result.error || "Request failed");
       }
 
       formMessage.className = "message success";
-      formMessage.textContent = "Project registered successfully!";
+      formMessage.textContent = isEditing
+        ? "Project updated successfully!"
+        : "Project registered successfully!";
+
+      formCard.hidden = true;
       form.reset();
+      editingProjectId = null;
 
       await loadProjects();
-      formCard.hidden = true;
     } catch (error) {
       formMessage.className = "message error";
       formMessage.textContent = error.message;
+      formCard.hidden = false;
     } finally {
       submitButton.disabled = false;
       submitButton.textContent = "Register project";
