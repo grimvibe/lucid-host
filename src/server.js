@@ -1,210 +1,63 @@
-
 const express = require("express");
 const path = require("path");
-const db = require("./database");
+const config = require("./config");
+const security = require("./security");
+const runner = require("./runner");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-app.use(express.json({ limit: "20kb" }));
+app.disable("x-powered-by");
+if (config.TRUST_PROXY) {
+  app.set("trust proxy", /^\d+$/.test(config.TRUST_PROXY) ? Number(config.TRUST_PROXY) : config.TRUST_PROXY);
+}
+
+app.use(security.securityHeaders);
+app.use(express.json({ limit: "100kb" }));
+app.use(security.originCheck);
+app.use(security.loadUser);
 app.use(express.static(path.join(__dirname, "../public")));
 
-const allowedRuntimes = ["nodejs", "python"];
-const allowedPlatforms = [
-  "whatsapp",
-  "telegram",
-  "discord",
-  "other"
-];
+require("./routes/system")(app);
+require("./routes/auth")(app);
+require("./routes/projects")(app);
+require("./routes/admin")(app);
 
-app.get("/api", (req, res) => {
-  res.json({
-    name: "Lucid Host",
-    version: "1.3.0",
-    status: "online",
-    supportedRuntimes: allowedRuntimes,
-    supportedPlatforms: allowedPlatforms
-  });
+app.use("/api", (req, res) => {
+  res.status(404).json({ error: "Not found" });
 });
 
-app.get("/health", (req, res) => {
-  res.json({
-    status: "ok",
-    uptime: process.uptime()
-  });
+// Express 5 forwards errors from async handlers here.
+app.use((error, req, res, next) => {
+  if (res.headersSent) return next(error);
+
+  if (error.type === "entity.too.large") {
+    return res.status(413).json({ error: "Request is too large" });
+  }
+  if (error.type === "entity.parse.failed") {
+    return res.status(400).json({ error: "Invalid JSON body" });
+  }
+
+  const status = error.status || error.statusCode || 500;
+  if (status >= 500) console.error(error);
+  res.status(status).json({ error: status >= 500 ? "Something went wrong" : error.message });
 });
 
-// List all projects from SQLite.
-app.get("/api/projects", (req, res) => {
-  const projects = db.prepare(`
-    SELECT id, name, runtime, platform, status, createdAt
-    FROM projects
-    ORDER BY id DESC
-  `).all();
-
-  res.json({
-    total: projects.length,
-    projects
-  });
+const server = app.listen(config.PORT, "0.0.0.0", () => {
+  console.log(`Lucid Host ${config.VERSION} is running on port ${config.PORT} (runner: ${config.RUNNER})`);
+  runner.restoreAll().catch(error => console.error("Restore failed:", error));
 });
 
-// Register a project in SQLite.
-app.post("/api/projects", (req, res) => {
-  const { name, runtime, platform } = req.body;
+// Stop bots cleanly, but remember which ones to bring back after a restart.
+let shuttingDown = false;
+async function shutdown(signal) {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  console.log(`${signal} received, stopping projects...`);
+  server.close();
+  await runner.stopAll();
+  process.exit(0);
+}
+process.on("SIGINT", () => shutdown("SIGINT"));
+process.on("SIGTERM", () => shutdown("SIGTERM"));
 
-  if (typeof name !== "string" || !name.trim()) {
-    return res.status(400).json({
-      error: "Project name is required"
-    });
-  }
-
-  if (name.trim().length > 60) {
-    return res.status(400).json({
-      error: "Project name must be 60 characters or fewer"
-    });
-  }
-
-  if (!allowedRuntimes.includes(runtime)) {
-    return res.status(400).json({
-      error: "Runtime must be nodejs or python"
-    });
-  }
-
-  if (!allowedPlatforms.includes(platform)) {
-    return res.status(400).json({
-      error: "Invalid messaging platform"
-    });
-  }
-
-  const createdAt = new Date().toISOString();
-
-  const result = db.prepare(`
-    INSERT INTO projects (name, runtime, platform, status, createdAt)
-    VALUES (?, ?, ?, 'registered', ?)
-  `).run(name.trim(), runtime, platform, createdAt);
-
-  const project = db.prepare(`
-    SELECT id, name, runtime, platform, status, createdAt
-    FROM projects
-    WHERE id = ?
-  `).get(result.lastInsertRowid);
-
-  res.status(201).json({
-    message: "Project registered successfully",
-    project
-  });
-});
-
-// Get one project by ID.
-app.get("/api/projects/:id", (req, res) => {
-  const id = Number(req.params.id);
-
-  if (!Number.isSafeInteger(id) || id < 1) {
-    return res.status(400).json({
-      error: "Invalid project ID"
-    });
-  }
-
-  const project = db.prepare(`
-    SELECT id, name, runtime, platform, status, createdAt
-    FROM projects
-    WHERE id = ?
-  `).get(id);
-
-  if (!project) {
-    return res.status(404).json({
-      error: "Project not found"
-    });
-  }
-
-  res.json(project);
-});
-
-// Edit a project.
-app.put("/api/projects/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const { name, runtime, platform } = req.body;
-
-  if (!Number.isSafeInteger(id) || id < 1) {
-    return res.status(400).json({
-      error: "Invalid project ID"
-    });
-  }
-
-  if (typeof name !== "string" || !name.trim()) {
-    return res.status(400).json({
-      error: "Project name is required"
-    });
-  }
-
-  if (name.trim().length > 60) {
-    return res.status(400).json({
-      error: "Project name must be 60 characters or fewer"
-    });
-  }
-
-  if (!allowedRuntimes.includes(runtime)) {
-    return res.status(400).json({
-      error: "Invalid runtime"
-    });
-  }
-
-  if (!allowedPlatforms.includes(platform)) {
-    return res.status(400).json({
-      error: "Invalid platform"
-    });
-  }
-
-  const result = db.prepare(`
-    UPDATE projects
-    SET name = ?, runtime = ?, platform = ?
-    WHERE id = ?
-  `).run(name.trim(), runtime, platform, id);
-
-  if (result.changes === 0) {
-    return res.status(404).json({
-      error: "Project not found"
-    });
-  }
-
-  const project = db.prepare(`
-    SELECT id, name, runtime, platform, status, createdAt
-    FROM projects
-    WHERE id = ?
-  `).get(id);
-
-  res.json({
-    message: "Project updated successfully",
-    project
-  });
-});
-
-// Delete a project.
-app.delete("/api/projects/:id", (req, res) => {
-  const id = Number(req.params.id);
-
-  if (!Number.isSafeInteger(id) || id < 1) {
-    return res.status(400).json({
-      error: "Invalid project ID"
-    });
-  }
-
-  const result = db.prepare(`
-    DELETE FROM projects WHERE id = ?
-  `).run(id);
-
-  if (result.changes === 0) {
-    return res.status(404).json({
-      error: "Project not found"
-    });
-  }
-
-  res.json({
-    message: "Project deleted successfully",
-    id
-  });
-});
-
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Lucid Host is running on port ${PORT}`);
-});
+module.exports = app;
