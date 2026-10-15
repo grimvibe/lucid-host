@@ -1,530 +1,200 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0b1020">
+  <meta name="theme-color" content="#070b1d">
   <title>Lucid Host | Dashboard</title>
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: system-ui, sans-serif;
-      background: #0b1020;
-      color: #eef2ff;
-    }
-
-    .layout { display: flex; min-height: 100vh; }
-
-    aside {
-      width: 210px;
-      flex-shrink: 0;
-      padding: 24px 14px;
-      background: #11182b;
-      border-right: 1px solid #26304a;
-    }
-
-    .brand { font-size: 21px; font-weight: 800; }
-    .brand span { color: #818cf8; }
-    nav { margin-top: 30px; }
-
-    nav a {
-      display: block;
-      padding: 12px;
-      margin: 7px 0;
-      color: #aeb9d4;
-      text-decoration: none;
-      border-radius: 9px;
-    }
-
-    nav a:hover, nav a.active {
-      background: #283052;
-      color: white;
-    }
-
-    main { flex: 1; min-width: 0; padding: 26px; }
-
-    .top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    h1 { margin: 0; font-size: 27px; }
-    h2 { margin-top: 28px; }
-    .muted { color: #9ca9c7; }
-
-    .status, .tag {
-      display: inline-block;
-      padding: 5px 9px;
-      border-radius: 20px;
-      font-size: 12px;
-      background: #123a30;
-      color: #6ee7b7;
-    }
-
-    .stats, .projects {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-      margin-top: 22px;
-    }
-
-    .projects { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-
-    .card, .form-card {
-      background: #11182b;
-      border: 1px solid #26304a;
-      border-radius: 13px;
-      padding: 18px;
-      overflow-wrap: anywhere;
-    }
-
-    .number { font-size: 26px; font-weight: 750; margin-top: 8px; }
-
-    button {
-      border: 0;
-      border-radius: 8px;
-      padding: 11px 15px;
-      background: #6366f1;
-      color: white;
-      font-weight: 650;
-      cursor: pointer;
-    }
-
-    button:hover { background: #818cf8; }
-    button:disabled { opacity: .6; cursor: wait; }
-    .secondary { background: #283052; }
-    .danger { background: #7f1d1d; }
-    .danger:hover { background: #b91c1c; }
-
-    .form-card { margin-top: 22px; }
-    .form-card[hidden] { display: none; }
-    form { display: grid; gap: 15px; }
-
-    label { display: grid; gap: 7px; font-size: 14px; }
-
-    input, select {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #35415f;
-      border-radius: 8px;
-      background: #0b1020;
-      color: #eef2ff;
-      font: inherit;
-    }
-
-    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
-    .message { margin-top: 14px; font-size: 14px; }
-    .error { color: #fca5a5; }
-    .success { color: #6ee7b7; }
-
-    .empty {
-      padding: 24px;
-      border: 1px dashed #35415f;
-      border-radius: 12px;
-      color: #9ca9c7;
-      text-align: center;
-      grid-column: 1 / -1;
-    }
-
-    .project-meta { line-height: 1.8; font-size: 13px; }
-    .project-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .project-actions button { padding: 9px 12px; }
-    footer { margin-top: 30px; color: #7f8ba8; font-size: 12px; }
-
-    @media (max-width: 650px) {
-      aside { width: 76px; padding: 18px 7px; }
-      .brand { font-size: 13px; text-align: center; }
-      nav a { padding: 11px 3px; text-align: center; font-size: 11px; }
-      main { padding: 16px 11px; }
-      h1 { font-size: 23px; }
-      .stats, .projects { grid-template-columns: 1fr; }
-      .card, .form-card { padding: 14px; }
-    }
-  </style>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2l8.5 5v10L12 22l-8.5-5V7z' fill='%236366f1'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/css/app.css">
 </head>
 <body>
-<div class="layout">
-  <aside>
-    <div class="brand">Lucid <span>Host</span></div>
-    <nav>
-      <a class="active" href="#dashboard">⌂ Dashboard</a>
-      <a href="#projects">▣ Projects</a>
-      <a href="#servers">▤ Servers</a>
-      <a href="#settings">⚙ Settings</a>
-    </nav>
-  </aside>
 
-  <main id="dashboard">
-    <div class="top">
+<svg width="0" height="0" class="sprite" aria-hidden="true">
+  <defs>
+    <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#3b82f6"/>
+    </linearGradient>
+  </defs>
+
+  <symbol id="i-logo" viewBox="0 0 48 48">
+    <path d="M24 3l18 10.5v21L24 45 6 34.5v-21z" fill="url(#lg)" opacity=".92"/>
+    <path d="M24 3l18 10.5L24 24 6 13.5z" fill="#fff" opacity=".28"/>
+    <path d="M24 24l18-10.5v21L24 45z" fill="#1e1b4b" opacity=".45"/>
+    <path d="M24 3l18 10.5v21L24 45 6 34.5v-21z" fill="none" stroke="#c7d2fe" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M24 24L6 13.5M24 24l18-10.5M24 24v21" stroke="#c7d2fe" stroke-width="1.2" fill="none"/>
+  </symbol>
+
+  <symbol id="i-dashboard" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-projects" viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5 9 5 9-5z" fill="currentColor" stroke="none"/><path d="M3 10.5v6l9 5v-6zM21 10.5v6l-9 5v-6z" fill="currentColor" stroke="none" opacity=".75"/></symbol>
+  <symbol id="i-servers" viewBox="0 0 24 24"><rect x="3" y="3.5" width="18" height="7" rx="2" fill="currentColor" stroke="none"/><rect x="3" y="13.5" width="18" height="7" rx="2" fill="currentColor" stroke="none" opacity=".8"/><path d="M7 7h.01M7 17h.01" stroke="#0d1330" stroke-width="2.5"/></symbol>
+  <symbol id="i-logs" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2.5" fill="currentColor" stroke="none"/><path d="M8 8h8M8 12h8M8 16h5" stroke="#0d1330" stroke-width="1.8"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.8" fill="currentColor" stroke="none"/><path d="M2 20c0-3.8 3.1-6.5 7-6.5s7 2.7 7 6.5z" fill="currentColor" stroke="none"/><circle cx="17.5" cy="9" r="2.6" fill="currentColor" stroke="none" opacity=".75"/><path d="M17.5 14c2.6 0 4.5 1.8 4.5 5h-4" fill="currentColor" stroke="none" opacity=".75"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/><path d="M3 12A9 9 0 0 1 18.5 5.8L21 8"/><path d="M21 3v5h-5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1.2" fill="currentColor" stroke="none"/><rect x="14" y="5" width="4" height="14" rx="1.2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.8" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/><circle cx="18.5" cy="12" r="1.8" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-cube" viewBox="0 0 24 24"><path d="M12 2.5l8.5 4.7v9.6L12 21.5l-8.5-4.7V7.2z" fill="currentColor" stroke="none"/><path d="M12 12l8.5-4.8M12 12L3.5 7.2M12 12v9.5" stroke="#0d1330" stroke-width="1.4" opacity=".7"/></symbol>
+  <symbol id="i-activity" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.6" fill="currentColor" stroke="none"/><path d="M2 20c0-3.8 3.1-6.5 7-6.5s7 2.7 7 6.5z" fill="currentColor" stroke="none"/><circle cx="17.5" cy="9" r="2.6" fill="currentColor" stroke="none" opacity=".7"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></symbol>
+  <symbol id="i-terminal" viewBox="0 0 24 24"><path d="M4 17l6-6-6-6"/><path d="M12 19h8"/></symbol>
+  <symbol id="i-restart" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
+  <symbol id="i-arrow-down" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4M6 10l6-6 6 6"/><path d="M4 20h16"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-git" viewBox="0 0 24 24"><circle cx="6" cy="5.5" r="2.5"/><circle cx="6" cy="18.5" r="2.5"/><circle cx="18" cy="9" r="2.5"/><path d="M6 8v8M18 11.5c0 4-6 3-11.5 5.5"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+
+  <symbol id="p-whatsapp" viewBox="0 0 48 48">
+    <rect width="48" height="48" rx="13" fill="#22c55e"/>
+    <path d="M24 9.5a14.5 14.5 0 0 0-12.4 22L9.5 38.5l7.2-2A14.5 14.5 0 1 0 24 9.5z" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round"/>
+    <path d="M19 17c.4 4.8 5.2 9.6 10 10l2.2-2.3-3.4-1.8-1.6 1.3c-1.6-.7-3.3-2.3-4-4l1.3-1.6-1.8-3.4z" fill="#fff"/>
+  </symbol>
+  <symbol id="p-telegram" viewBox="0 0 48 48">
+    <rect width="48" height="48" rx="13" fill="#229ed9"/>
+    <path d="M37 11L9.5 21.7l7.3 2.6 2.8 9 4-5 7.6 5.6z" fill="#fff"/>
+    <path d="M16.8 24.3L37 11 19.6 27.9l-.8 6.4z" fill="#b6dcf0"/>
+  </symbol>
+  <symbol id="p-discord" viewBox="0 0 48 48">
+    <rect width="48" height="48" rx="13" fill="#5865f2"/>
+    <path d="M13 17c3.2-1.7 6.3-2.5 11-2.5S31.800 15.300 35 17c2 4.600 3 9 2.700 14-2.200 1.700-4.600 2.700-7 3.200l-1.800-3a17 17 0 0 1-9.800 0l-1.800 3c-2.400-.5-4.800-1.500-7-3.200-.3-5 .7-9.400 2.700-14z" fill="#fff"/>
+    <ellipse cx="19" cy="25.5" rx="2.6" ry="3" fill="#5865f2"/><ellipse cx="29" cy="25.5" rx="2.6" ry="3" fill="#5865f2"/>
+  </symbol>
+  <symbol id="p-python" viewBox="0 0 48 48">
+    <rect width="48" height="48" rx="13" fill="#17213f"/>
+    <path d="M24 9c-6 0-6.300 2.600-6.300 4.700V17h6.500v1.500h-9.300c-3 0-5.600 1.800-6.400 5.300-.9 3.900-.9 6.200 0 10.200.7 3 2.400 5 5.400 5h3.500v-4.500c0-3.200 2.800-5.900 6.200-5.900h6.400c2.800 0 5-2.300 5-5v-9.300C34.700 10.500 30.500 9 24 9z" fill="#3b82c4"/>
+    <path d="M24 39c6 0 6.300-2.600 6.300-4.700V31h-6.500v-1.500h9.300c3 0 5.600-1.800 6.400-5.300.9-3.900.9-6.200 0-10.200-.7-3-2.400-5-5.400-5H30.600V13.500c0 3.200-2.800 5.900-6.200 5.900H18c-2.800 0-5 2.300-5 5v9.300C13.300 37.500 17.500 39 24 39z" fill="#ffd43b" opacity=".95"/>
+    <circle cx="20.500" cy="13.500" r="1.200" fill="#17213f"/><circle cx="27.500" cy="34.500" r="1.200" fill="#17213f"/>
+  </symbol>
+  <symbol id="p-nodejs" viewBox="0 0 48 48">
+    <rect width="48" height="48" rx="13" fill="#17301f"/>
+    <path d="M24 8l13 7.5v15L24 38 11 30.500v-15z" fill="#3fa14a"/>
+    <path d="M24 8l13 7.5L24 23 11 15.500z" fill="#79d283" opacity=".7"/>
+  </symbol>
+</svg>
+
+<!-- Sign in / create account -->
+<div id="authView" class="auth-view" hidden>
+  <div class="auth-card glow-card">
+    <div class="auth-brand">
+      <svg class="logo-mark"><use href="#i-logo"/></svg>
       <div>
-        <h1>Dashboard</h1>
-        <p class="muted">Your bot-hosting control panel.</p>
+        <div class="brand-name">Lucid <span>Host</span></div>
+        <div class="brand-tag">Your Bots. Our Power.</div>
       </div>
-      <span class="status" id="apiStatus">Checking API...</span>
     </div>
 
-    <section class="stats">
-      <div class="card">
-        <div class="muted">Total projects</div>
-        <div class="number" id="totalProjects">—</div>
-      </div>
-      <div class="card">
-        <div class="muted">Registered</div>
-        <div class="number" id="registeredProjects">—</div>
-      </div>
-      <div class="card">
-        <div class="muted">Supported runtimes</div>
-        <div class="number">2</div>
-        <div class="muted">Node.js and Python</div>
-      </div>
-    </section>
+    <h1 id="authTitle">Sign in</h1>
+    <p class="muted" id="authSubtitle">Welcome back. Sign in to manage your bots.</p>
 
-    <section id="projects">
-      <div class="top">
-        <h2>Your projects</h2>
-        <div class="actions">
-          <button class="secondary" id="refreshButton" type="button">
-            ↻ Refresh
-          </button>
-          <button id="addButton" type="button">+ Add project</button>
-        </div>
-      </div>
+    <form id="authForm" autocomplete="on" novalidate>
+      <label class="field" id="emailField" hidden>
+        <span>Email</span>
+        <input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" maxlength="120">
+      </label>
+      <label class="field">
+        <span id="usernameLabel">Username or email</span>
+        <input id="authUsername" type="text" autocomplete="username" placeholder="your-username" maxlength="120" required>
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input id="authPassword" type="password" autocomplete="current-password" placeholder="At least 8 characters" maxlength="128" required>
+      </label>
+      <button class="btn primary block" id="authSubmit" type="submit">Sign in</button>
+      <div class="form-message" id="authMessage" role="alert"></div>
+    </form>
 
-      <div class="form-card" id="projectFormCard" hidden>
-        <h3 id="formTitle">Register a project</h3>
-        <p class="muted" id="formDescription">
-          Register project details. This does not run the bot yet.
-        </p>
-
-        <form id="projectForm">
-          <label>
-            Project name
-            <input id="projectName" name="name" type="text"
-              maxlength="60" placeholder="e.g. My WhatsApp Bot" required>
-          </label>
-
-          <label>
-            Runtime
-            <select id="runtime" name="runtime" required>
-              <option value="nodejs">Node.js</option>
-              <option value="python">Python</option>
-            </select>
-          </label>
-
-          <label>
-            Messaging platform
-            <select id="platform" name="platform" required>
-              <option value="whatsapp">WhatsApp</option>
-              <option value="telegram">Telegram</option>
-              <option value="discord">Discord</option>
-              <option value="other">Other / General app</option>
-            </select>
-          </label>
-
-          <div class="actions">
-            <button id="submitButton" type="submit">Register project</button>
-            <button class="secondary" id="cancelButton" type="button">
-              Cancel
-            </button>
-          </div>
-        </form>
-        <div class="message" id="formMessage" role="status"></div>
-      </div>
-
-      <div class="projects" id="projectList"></div>
-      <div class="message" id="listMessage" role="status"></div>
-    </section>
-
-    <section id="servers">
-      <h2>Server overview</h2>
-      <div class="card">
-        <strong>Hosting engine</strong>
-        <p class="muted">
-          The execution engine is not connected yet. Projects are metadata
-          only until secure bot execution is implemented.
-        </p>
-      </div>
-    </section>
-
-    <footer id="settings">Lucid Host · Development version</footer>
-  </main>
+    <p class="muted auth-switch" id="authSwitchWrap">
+      <span id="authSwitchText">New here?</span>
+      <button class="link-btn" id="authSwitch" type="button">Create an account</button>
+    </p>
+  </div>
 </div>
 
-<script>
-  const formCard = document.getElementById("projectFormCard");
-  const form = document.getElementById("projectForm");
-  const formMessage = document.getElementById("formMessage");
-  const listMessage = document.getElementById("listMessage");
-  const submitButton = document.getElementById("submitButton");
-  const projectList = document.getElementById("projectList");
+<!-- Main application -->
+<div id="appView" class="app-view" hidden>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#/dashboard">
+        <svg class="logo-mark"><use href="#i-logo"/></svg>
+        <div>
+          <div class="brand-name">Lucid <span>Host</span></div>
+          <div class="brand-tag">Your Bots. Our Power.</div>
+        </div>
+      </a>
 
-  let editingProjectId = null;
+      <nav class="nav" id="nav"></nav>
 
-  const runtimeLabels = {
-    nodejs: "Node.js",
-    python: "Python"
-  };
+      <div class="user-card">
+        <button class="user-btn" id="userBtn" type="button" aria-haspopup="true">
+          <span class="avatar" id="userAvatar">A</span>
+          <span class="user-text">
+            <strong id="userName">User</strong>
+            <small id="userRole">User</small>
+          </span>
+          <svg class="icon sm"><use href="#i-chevron"/></svg>
+        </button>
+        <div class="menu up" id="userMenu" hidden>
+          <button type="button" data-action="goto-settings">Settings</button>
+          <button type="button" data-action="logout">Sign out</button>
+        </div>
+      </div>
+    </aside>
+    <div class="scrim" id="scrim" hidden></div>
 
-  const platformLabels = {
-    whatsapp: "WhatsApp",
-    telegram: "Telegram",
-    discord: "Discord",
-    other: "Other / General app"
-  };
+    <div class="main-col">
+      <header class="topbar">
+        <button class="icon-btn only-mobile" id="menuBtn" type="button" aria-label="Open menu">
+          <svg class="icon"><use href="#i-menu"/></svg>
+        </button>
 
-  function escapeHTML(value) {
-    return String(value).replace(/[&<>"']/g, char => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;"
-    })[char]);
-  }
+        <label class="search">
+          <svg class="icon sm"><use href="#i-search"/></svg>
+          <input id="searchInput" type="search" placeholder="Search projects, users, or IDs..." autocomplete="off">
+        </label>
 
-  function showForm(project = null) {
-    editingProjectId = project ? project.id : null;
-
-    form.reset();
-    formMessage.textContent = "";
-    formMessage.className = "message";
-    formCard.hidden = false;
-
-    document.getElementById("formTitle").textContent =
-      project ? "Edit project" : "Register a project";
-
-    document.getElementById("formDescription").textContent =
-      project
-        ? "Update this project's details."
-        : "Register project details. This does not run the bot yet.";
-
-    submitButton.textContent =
-      project ? "Save changes" : "Register project";
-
-    if (project) {
-      document.getElementById("projectName").value = project.name;
-      document.getElementById("runtime").value = project.runtime;
-      document.getElementById("platform").value = project.platform;
-    }
-
-    document.getElementById("projectName").focus();
-  }
-
-  document.getElementById("addButton").addEventListener("click", () => {
-    showForm();
-  });
-
-  document.getElementById("cancelButton").addEventListener("click", () => {
-    formCard.hidden = true;
-    form.reset();
-    editingProjectId = null;
-    formMessage.textContent = "";
-  });
-
-  document.getElementById("refreshButton").addEventListener("click", () => {
-    loadProjects();
-    checkAPI();
-  });
-
-  async function loadProjects() {
-    const refreshButton = document.getElementById("refreshButton");
-    refreshButton.disabled = true;
-    listMessage.className = "message";
-    listMessage.textContent = "";
-
-    try {
-      const response = await fetch("/api/projects");
-      if (!response.ok) throw new Error("Could not load projects");
-
-      const data = await response.json();
-
-      document.getElementById("totalProjects").textContent = data.total;
-      document.getElementById("registeredProjects").textContent =
-        data.projects.filter(p => p.status === "registered").length;
-
-      projectList.replaceChildren();
-
-      if (data.projects.length === 0) {
-        projectList.innerHTML =
-          '<div class="empty">No projects yet. Tap Add project to register your first one.</div>';
-        return;
-      }
-
-      for (const project of data.projects) {
-        const card = document.createElement("article");
-        card.className = "card";
-
-        card.innerHTML = `
-          <div class="top">
-            <strong>${escapeHTML(project.name)}</strong>
-            <span class="tag">${escapeHTML(project.status)}</span>
+        <div class="top-actions">
+          <div class="bell-wrap">
+            <button class="icon-btn" id="bellBtn" type="button" aria-label="Notifications">
+              <svg class="icon"><use href="#i-bell"/></svg>
+              <span class="badge" id="bellBadge" hidden>0</span>
+            </button>
+            <div class="popover" id="notifPanel" hidden></div>
           </div>
-          <p class="project-meta muted">
-            Runtime: ${escapeHTML(runtimeLabels[project.runtime] || project.runtime)}<br>
-            Platform: ${escapeHTML(platformLabels[project.platform] || project.platform)}<br>
-            Project ID: ${escapeHTML(project.id)}<br>
-            Created: ${escapeHTML(new Date(project.createdAt).toLocaleString())}
-          </p>
-          <div class="project-actions">
-            <button type="button" class="edit-button"
-              data-id="${escapeHTML(project.id)}">Edit</button>
-            <button type="button" class="danger delete-button"
-              data-id="${escapeHTML(project.id)}">Delete</button>
-          </div>
-        `;
+          <button class="icon-btn" id="themeBtn" type="button" aria-label="Toggle theme">
+            <svg class="icon"><use href="#i-moon"/></svg>
+          </button>
+          <span class="pill online" id="apiPill"><i></i><span>Online</span></span>
+          <a class="host-pill" href="#/settings">
+            <i class="dot"></i>
+            <span><strong>Lucid Host</strong><small id="versionText">v2.0.0</small></span>
+            <span class="shield"><svg class="icon sm"><use href="#i-shield"/></svg></span>
+          </a>
+        </div>
+      </header>
 
-        projectList.appendChild(card);
-      }
-    } catch (error) {
-      listMessage.className = "message error";
-      listMessage.textContent =
-        "Unable to load projects. Check that the API server is running.";
-    } finally {
-      refreshButton.disabled = false;
-    }
-  }
+      <main id="view" class="view"></main>
+    </div>
+  </div>
+</div>
 
-  projectList.addEventListener("click", async event => {
-    const editButton = event.target.closest(".edit-button");
-    const deleteButton = event.target.closest(".delete-button");
+<div id="modalRoot"></div>
+<div id="toastRoot" class="toasts" aria-live="polite"></div>
 
-    if (editButton) {
-      const id = editButton.dataset.id;
-
-      try {
-        const response = await fetch(
-          `/api/projects/${encodeURIComponent(id)}`
-        );
-
-        const project = await response.json();
-
-        if (!response.ok) {
-          throw new Error(project.error || "Could not open project");
-        }
-
-        showForm(project);
-      } catch (error) {
-        listMessage.className = "message error";
-        listMessage.textContent = error.message;
-      }
-    }
-
-    if (deleteButton) {
-      const id = deleteButton.dataset.id;
-
-      if (!confirm(
-        `Are you sure you want to delete project #${id}? This cannot be undone.`
-      )) {
-        return;
-      }
-
-      deleteButton.disabled = true;
-
-      try {
-        const response = await fetch(
-          `/api/projects/${encodeURIComponent(id)}`,
-          { method: "DELETE" }
-        );
-
-        const result = await response.json();
-
-        if (!response.ok) {
-          throw new Error(result.error || "Could not delete project");
-        }
-
-        listMessage.className = "message success";
-        listMessage.textContent = "Project deleted successfully.";
-
-        if (String(editingProjectId) === String(id)) {
-          formCard.hidden = true;
-          editingProjectId = null;
-          form.reset();
-        }
-
-        await loadProjects();
-      } catch (error) {
-        listMessage.className = "message error";
-        listMessage.textContent = error.message;
-      } finally {
-        deleteButton.disabled = false;
-      }
-    }
-  });
-
-  async function checkAPI() {
-    const status = document.getElementById("apiStatus");
-
-    try {
-      const response = await fetch("/health");
-      if (!response.ok) throw new Error("API unavailable");
-
-      status.textContent = "● API connected";
-    } catch {
-      status.textContent = "● API unavailable";
-    }
-  }
-
-  form.addEventListener("submit", async event => {
-    event.preventDefault();
-
-    formMessage.className = "message";
-    formMessage.textContent = "";
-    submitButton.disabled = true;
-
-    const isEditing = editingProjectId !== null;
-    submitButton.textContent = isEditing ? "Saving..." : "Registering...";
-
-    const project = {
-      name: document.getElementById("projectName").value.trim(),
-      runtime: document.getElementById("runtime").value,
-      platform: document.getElementById("platform").value
-    };
-
-    try {
-      const url = isEditing
-        ? `/api/projects/${encodeURIComponent(editingProjectId)}`
-        : "/api/projects";
-
-      const response = await fetch(url, {
-        method: isEditing ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(project)
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "Request failed");
-      }
-
-      formMessage.className = "message success";
-      formMessage.textContent = isEditing
-        ? "Project updated successfully!"
-        : "Project registered successfully!";
-
-      formCard.hidden = true;
-      form.reset();
-      editingProjectId = null;
-
-      await loadProjects();
-    } catch (error) {
-      formMessage.className = "message error";
-      formMessage.textContent = error.message;
-      formCard.hidden = false;
-    } finally {
-      submitButton.disabled = false;
-      submitButton.textContent = "Register project";
-    }
-  });
-
-  checkAPI();
-  loadProjects();
-</script>
+<script src="/js/app.js"></script>
 </body>
 </html>
